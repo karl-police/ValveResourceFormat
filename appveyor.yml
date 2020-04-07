@@ -10,10 +10,6 @@ dotnet_csproj:
   file_version: '{version}'
   informational_version: '{version}'
 
-environment:
-  COVERALLS_REPO_TOKEN:
-    secure: WBUIkucQ46pEHPX6LbgX1WhSEKb8E7kdl7SMJjfMn+CxUvr/oij9IKuJlSLDBT0p
-
 cache: '%LocalAppData%\NuGet\Cache'
 
 build_script:
@@ -25,20 +21,6 @@ after_build:
   - dotnet publish --configuration Release -p:PublishSingleFile=true --runtime win-x64 Decompiler\Decompiler.csproj
   - dotnet publish --configuration Release -p:PublishSingleFile=true --runtime linux-x64 Decompiler\Decompiler.csproj
 
-test_script:
-- ps: >-
-    $opencover = (Resolve-Path "$ENV:USERPROFILE/.nuget/packages/OpenCover/*/tools/OpenCover.Console.exe").ToString();
-    & $opencover "-target:%ProgramFiles%\dotnet\dotnet.exe" "-targetargs:test -c debug Tests\Tests.csproj" -filter:"+[ValveResourceFormat*]* -[ValveResourceFormat]SevenZip*" -output:opencoverCoverage.xml -register:administrator -returntargetcode -oldStyle
-
-    if ($LastExitCode -ne 0) {
-      throw "Exec: $ErrorMessage`nExit code: $LastExitCode";
-    }
-
-    if ($env:APPVEYOR_PULL_REQUEST_NUMBER -eq $null) {
-      $coveralls = (Resolve-Path "$ENV:USERPROFILE/.nuget/packages/coveralls.net/*/tools/csmacnz.coveralls.exe").ToString();
-      & $coveralls --opencover -i opencoverCoverage.xml --repoToken $env:COVERALLS_REPO_TOKEN --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_BUILD_NUMBER --serviceName appveyor
-    }
-
 artifacts:
 - path: Decompiler\bin\Release\netcoreapp3.1\win-x64\publish
   name: Decompiler-win-x64
@@ -48,12 +30,3 @@ artifacts:
   name: GUI
 - path: '**\*.nupkg'
   name: ValveResourceFormat
-
-deploy:
-- provider: GitHub
-  auth_token:
-    secure: nK1ZJwyjxiXhpKYZ8AjsgEqtvTYJR9A4hc5KDseSNi/CO+9scXnuc1A/ZODoAja4
-  draft: false
-  prerelease: true
-  on:
-    APPVEYOR_REPO_TAG: true

@@ -65,8 +65,7 @@ namespace ValveResourceFormat.ResourceTypes
             {
                 throw new InvalidDataException($"Invalid vsnd version '{resource.Version}'");
             }
-            
-            Console.WriteLine($"Testing: {resource} and {resource.Version}");
+
             if (resource.Version >= 4)
             {
                 SampleRate = reader.ReadUInt16();

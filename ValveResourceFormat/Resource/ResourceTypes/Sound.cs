@@ -5,7 +5,6 @@ using ValveResourceFormat.Blocks;
 
 namespace ValveResourceFormat.ResourceTypes
 {
-
     public class Sound : ResourceData
     {
         public enum AudioFileType

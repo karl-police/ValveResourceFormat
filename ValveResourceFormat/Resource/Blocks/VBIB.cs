@@ -15,7 +15,8 @@ namespace ValveResourceFormat.Blocks
 
         public List<VertexBuffer> VertexBuffers { get; }
         public List<IndexBuffer> IndexBuffers { get; }
-
+        
+#pragma warning disable CA1051 // Do not declare visible instance fields
         public struct VertexBuffer
         {
             public uint Count;
@@ -37,6 +38,7 @@ namespace ValveResourceFormat.Blocks
             public uint Size;
             public byte[] Buffer;
         }
+#pragma warning restore CA1051 // Do not declare visible instance fields
 
         public VBIB()
         {
@@ -144,7 +146,7 @@ namespace ValveResourceFormat.Blocks
             }
         }
 
-        public float[] ReadVertexAttribute(int offset, VertexBuffer vertexBuffer, VertexAttribute attribute)
+        public static float[] ReadVertexAttribute(int offset, VertexBuffer vertexBuffer, VertexAttribute attribute)
         {
             float[] result;
 
@@ -188,7 +190,7 @@ namespace ValveResourceFormat.Blocks
                     result = new[]
                     {
                         HalfTypeHelper.Convert(shorts[0]),
-                        HalfTypeHelper.Convert(shorts[1]) * -1f,
+                        HalfTypeHelper.Convert(shorts[1]),
                     };
                     break;
                 }
@@ -197,7 +199,6 @@ namespace ValveResourceFormat.Blocks
                 {
                     result = new float[2];
                     Buffer.BlockCopy(vertexBuffer.Buffer, offset, result, 0, 8);
-                    result[1] *= -1f; // Flip texcoord
                     break;
                 }
 

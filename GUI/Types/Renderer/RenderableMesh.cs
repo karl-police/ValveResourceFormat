@@ -109,37 +109,14 @@ namespace GUI.Types.Renderer
                     }
 
                     var shaderArguments = new Dictionary<string, bool>();
-                    if (objectDrawCall.ContainsKey("m_bUseCompressedNormalTangent"))
+
+                    if (DrawCall.IsCompressedNormalTangent(objectDrawCall))
                     {
-                        shaderArguments.Add("fulltangent", !objectDrawCall.GetProperty<bool>("m_bUseCompressedNormalTangent"));
-                    }
-
-                    if (objectDrawCall.ContainsKey("m_nFlags"))
-                    {
-                        var flags = objectDrawCall.GetProperty<object>("m_nFlags");
-
-                        switch (flags)
-                        {
-                            case string flagsString:
-                                if (flagsString.Contains("MESH_DRAW_FLAGS_USE_COMPRESSED_NORMAL_TANGENT"))
-                                {
-                                    shaderArguments.Add("fulltangent", false);
-                                }
-
-                                break;
-                            case long flagsLong:
-                                // TODO: enum
-                                if ((flagsLong & 2) == 2)
-                                {
-                                    shaderArguments.Add("fulltangent", false);
-                                }
-
-                                break;
-                        }
+                        shaderArguments.Add("fulltangent", false);
                     }
 
                     // TODO: Don't pass around so much shit
-                    var drawCall = CreateDrawCall(objectDrawCall, vbib, gpuMeshBuffers, shaderArguments, material);
+                    var drawCall = CreateDrawCall(objectDrawCall, vbib, shaderArguments, material);
 
                     if (drawCall.Material.IsBlended)
                     {
@@ -155,7 +132,7 @@ namespace GUI.Types.Renderer
             //drawCalls = drawCalls.OrderBy(x => x.Material.Parameters.Name).ToList();
         }
 
-        private DrawCall CreateDrawCall(IKeyValueCollection objectDrawCall, VBIB vbib, GPUMeshBuffers gpuMeshBuffers, IDictionary<string, bool> shaderArguments, RenderMaterial material)
+        private DrawCall CreateDrawCall(IKeyValueCollection objectDrawCall, VBIB vbib, IDictionary<string, bool> shaderArguments, RenderMaterial material)
         {
             var drawCall = new DrawCall();
 
